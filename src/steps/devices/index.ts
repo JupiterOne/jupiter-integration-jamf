@@ -10,19 +10,9 @@ import {
   RelationshipClass,
   RelationshipDirection,
 } from '@jupiterone/integration-sdk-core';
-import { createClient, JamfClient } from '../../jamf/client';
+
 import { IntegrationConfig } from '../../config';
-import {
-  Entities,
-  Relationships,
-  MAC_OS_CONFIGURATION_DETAILS_BY_ID_KEY,
-  IntegrationSteps,
-} from '../constants';
-import {
-  createMobileDeviceEntity,
-  createComputerEntity,
-  createMacOsConfigurationEntity,
-} from './converters';
+import { createClient, JamfClient } from '../../jamf/client';
 import {
   Computer,
   ComputerDetail,
@@ -31,8 +21,19 @@ import {
   OSXConfigurationDetailParsed,
 } from '../../jamf/types';
 import { getAccountEntity } from '../../util/account';
-import { toOSXConfigurationDetailParsed } from '../../util/toOSXConfigurationParsed';
 import { generateEntityKey, generateRelationKey } from '../../util/generateKey';
+import { toOSXConfigurationDetailParsed } from '../../util/toOSXConfigurationParsed';
+import {
+  Entities,
+  IntegrationSteps,
+  MAC_OS_CONFIGURATION_DETAILS_BY_ID_KEY,
+  Relationships,
+} from '../constants';
+import {
+  createComputerEntity,
+  createMacOsConfigurationEntity,
+  createMobileDeviceEntity,
+} from './converters';
 
 type MacOsConfigurationDetailsById = Map<number, OSXConfigurationDetailParsed>;
 
@@ -75,6 +76,10 @@ async function iterateComputerDetails(
 
     try {
       computerDetail = await client.fetchComputerById(computer.id);
+      logger.info(
+        { computerId: computer.id },
+        'Fetched computer details for ID',
+      );
       numComputerDetailFetchSuccess++;
     } catch (err) {
       // We sometimes see errors (e.g. 502 Bad Gateway) from the above API. If
@@ -85,7 +90,7 @@ async function iterateComputerDetails(
           err,
           computerId: computer.id,
         },
-        'Could not fetch computer by id',
+        'Failed to fetch computer details by ID',
       );
       numComputerDetailFetchFailed++;
       continue;

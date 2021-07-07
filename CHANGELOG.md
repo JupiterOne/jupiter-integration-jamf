@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- Log computer detail fetch events for operations
+
 ## 2.1.2 - 2020-04-27
 
 ### Fixed
